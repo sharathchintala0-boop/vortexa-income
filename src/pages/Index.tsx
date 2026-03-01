@@ -1,12 +1,41 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useFinanceData } from "@/hooks/useFinanceData";
+import { StatsCards } from "@/components/StatsCards";
+import { OrdersTable } from "@/components/OrdersTable";
+import { ExpensesTable } from "@/components/ExpensesTable";
+import { Server } from "lucide-react";
 
 const Index = () => {
+  const {
+    orders, expenses,
+    totalRevenue, totalExpenses, totalProfit,
+    addOrder, updateOrder, deleteOrder,
+    addExpense, updateExpense, deleteExpense,
+  } = useFinanceData();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
+            <Server className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">HostPanel</h1>
+            <p className="text-xs text-muted-foreground">Hosting Revenue Tracker</p>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        <StatsCards
+          totalRevenue={totalRevenue}
+          totalExpenses={totalExpenses}
+          totalProfit={totalProfit}
+          orderCount={orders.length}
+        />
+        <OrdersTable orders={orders} onAdd={addOrder} onUpdate={updateOrder} onDelete={deleteOrder} />
+        <ExpensesTable expenses={expenses} onAdd={addExpense} onUpdate={updateExpense} onDelete={deleteExpense} />
+      </main>
     </div>
   );
 };
