@@ -2,8 +2,8 @@ import { useState, useCallback } from "react";
 import { Order, Expense } from "@/types/finance";
 import { initialOrders, initialExpenses } from "@/data/initialData";
 
-const ORDERS_KEY = "hosting_orders";
-const EXPENSES_KEY = "hosting_expenses";
+const ORDERS_KEY = "hosting_orders_v2";
+const EXPENSES_KEY = "hosting_expenses_v2";
 
 function loadFromStorage<T>(key: string, fallback: T): T {
   try {
