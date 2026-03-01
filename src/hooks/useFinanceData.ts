@@ -22,7 +22,7 @@ export function useFinanceData() {
   const [orders, setOrders] = useState<Order[]>(() => loadFromStorage(ORDERS_KEY, initialOrders));
   const [expenses, setExpenses] = useState<Expense[]>(() => loadFromStorage(EXPENSES_KEY, initialExpenses));
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.price * o.quantity, 0);
+  const totalRevenue = orders.reduce((sum, o) => sum + o.price, 0);
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   const totalProfit = totalRevenue - totalExpenses;
 

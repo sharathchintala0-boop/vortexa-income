@@ -20,8 +20,8 @@ const Index = () => {
             <Server className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">HostPanel</h1>
-            <p className="text-xs text-muted-foreground">Hosting Revenue Tracker</p>
+            <h1 className="text-xl font-bold tracking-tight">Vortexacloud</h1>
+            <p className="text-xs text-muted-foreground">Revenue Tracker</p>
           </div>
         </div>
       </header>
