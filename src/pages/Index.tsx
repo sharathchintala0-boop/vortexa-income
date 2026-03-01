@@ -14,9 +14,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border px-6 py-4">
+      <header className="border-b border-border bg-card px-6 py-4 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
+          <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-accent-foreground flex items-center justify-center shadow-md">
             <Server className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
