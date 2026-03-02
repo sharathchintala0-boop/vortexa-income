@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Order } from "@/types/finance";
-import { Server, Code, HardDrive, Globe, Package } from "lucide-react";
+import { Server, Code, HardDrive, Globe, Package, ChevronDown, ChevronUp } from "lucide-react";
 
 interface CategoryCardsProps {
   orders: Order[];
@@ -39,6 +40,64 @@ const categoryColors: Record<string, string> = {
   "Mail Server": "bg-chart-5/15 text-chart-5 border-chart-5/30",
 };
 
+function CategoryCard({ cat, data, orders }: { cat: string; data: { customers: Set<string>; revenue: number; count: number }; orders: Order[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const Icon = categoryIcons[cat] || Package;
+  const colors = categoryColors[cat] || categoryColors["Other"];
+  const customerList = Array.from(data.customers);
+
+  // Get orders for each customer in this category
+  const customerOrders: Record<string, Order[]> = {};
+  orders.forEach((order) => {
+    if (categorize(order.serverType) === cat) {
+      if (!customerOrders[order.customerId]) customerOrders[order.customerId] = [];
+      customerOrders[order.customerId].push(order);
+    }
+  });
+
+  return (
+    <div className={`rounded-lg border p-4 ${colors} cursor-pointer transition-all`} onClick={() => setExpanded(!expanded)}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Icon className="h-4 w-4" />
+          <span className="text-sm font-semibold">{cat}</span>
+        </div>
+        {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+      </div>
+      <p className="text-xs opacity-80 mb-2">{data.count} orders · {customerList.length} clients · ${data.revenue.toFixed(0)} revenue</p>
+
+      {!expanded && (
+        <div className="text-xs opacity-70">
+          {customerList.slice(0, 3).map((c) => (
+            <span key={c} className="inline-block mr-1 mb-1 px-1.5 py-0.5 rounded bg-background/50 text-foreground text-[10px]">
+              {c}
+            </span>
+          ))}
+          {customerList.length > 3 && (
+            <span className="text-[10px] opacity-60">+{customerList.length - 3} more</span>
+          )}
+        </div>
+      )}
+
+      {expanded && (
+        <div className="mt-2 space-y-2 text-foreground" onClick={(e) => e.stopPropagation()}>
+          {customerList.map((customer) => (
+            <div key={customer} className="rounded-md bg-background/60 p-2">
+              <p className="text-xs font-semibold mb-1">{customer}</p>
+              {customerOrders[customer]?.map((order) => (
+                <div key={order.id} className="flex items-center justify-between text-[10px] opacity-80">
+                  <span>{order.date} · {order.plan}</span>
+                  <span className="font-mono font-semibold">${order.price.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CategoryCards({ orders }: CategoryCardsProps) {
   const groups: Record<string, { customers: Set<string>; revenue: number; count: number }> = {};
 
@@ -58,31 +117,9 @@ export function CategoryCards({ orders }: CategoryCardsProps) {
         <h2 className="text-lg font-semibold">Categories</h2>
       </div>
       <div className="p-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {sorted.map(([cat, data]) => {
-          const Icon = categoryIcons[cat] || Package;
-          const colors = categoryColors[cat] || categoryColors["Other"];
-          return (
-            <div key={cat} className={`rounded-lg border p-4 ${colors}`}>
-              <div className="flex items-center gap-2 mb-2">
-                <Icon className="h-4 w-4" />
-                <span className="text-sm font-semibold">{cat}</span>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs opacity-80">{data.count} orders · ${data.revenue.toFixed(0)} revenue</p>
-                <div className="text-xs opacity-70">
-                  {Array.from(data.customers).slice(0, 5).map((c) => (
-                    <span key={c} className="inline-block mr-1 mb-1 px-1.5 py-0.5 rounded bg-background/50 text-foreground text-[10px]">
-                      {c}
-                    </span>
-                  ))}
-                  {data.customers.size > 5 && (
-                    <span className="text-[10px] opacity-60">+{data.customers.size - 5} more</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {sorted.map(([cat, data]) => (
+          <CategoryCard key={cat} cat={cat} data={data} orders={orders} />
+        ))}
       </div>
     </div>
   );
