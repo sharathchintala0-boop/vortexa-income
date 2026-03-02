@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Order } from "@/types/finance";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, Clock } from "lucide-react";
 import { OrderFormDialog } from "./OrderFormDialog";
+import { calculateDaysLeft } from "@/lib/daysLeft";
 
 interface OrdersTableProps {
   orders: Order[];
@@ -37,6 +38,7 @@ export function OrdersTable({ orders, onAdd, onUpdate, onDelete }: OrdersTablePr
               <th className="text-right p-3 font-medium">Price</th>
               <th className="text-left p-3 font-medium">Plan</th>
               <th className="text-left p-3 font-medium">Period</th>
+              <th className="text-left p-3 font-medium">Days Left</th>
               <th className="text-right p-3 font-medium">Actions</th>
             </tr>
           </thead>
@@ -55,6 +57,16 @@ export function OrdersTable({ orders, onAdd, onUpdate, onDelete }: OrdersTablePr
                 <td className="p-3 text-right font-mono text-revenue font-semibold">${order.price.toFixed(2)}</td>
                 <td className="p-3 text-xs">{order.plan}</td>
                 <td className="p-3 text-xs">{order.months}</td>
+                <td className="p-3">
+                  {(() => {
+                    const days = calculateDaysLeft(order.date, order.months);
+                    if (days === null) return <span className="text-xs text-muted-foreground">—</span>;
+                    if (days <= 0) return <span className="text-xs font-semibold text-expense">Expired</span>;
+                    if (days <= 7) return <span className="flex items-center gap-1 text-xs font-semibold text-expense"><Clock className="h-3 w-3" />{days}d</span>;
+                    if (days <= 30) return <span className="flex items-center gap-1 text-xs font-medium text-chart-1"><Clock className="h-3 w-3" />{days}d</span>;
+                    return <span className="text-xs text-muted-foreground">{days}d</span>;
+                  })()}
+                </td>
                 <td className="p-3 text-right">
                   <div className="flex items-center justify-end gap-1">
                     <button onClick={() => setEditingOrder(order)} className="p-1.5 rounded hover:bg-secondary transition-colors">

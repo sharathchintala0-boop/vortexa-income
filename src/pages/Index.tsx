@@ -2,6 +2,7 @@ import { useFinanceData } from "@/hooks/useFinanceData";
 import { StatsCards } from "@/components/StatsCards";
 import { OrdersTable } from "@/components/OrdersTable";
 import { ExpensesTable } from "@/components/ExpensesTable";
+import { CategoryCards } from "@/components/CategoryCards";
 import { Server } from "lucide-react";
 
 const Index = () => {
@@ -10,6 +11,7 @@ const Index = () => {
     totalRevenue, totalExpenses, totalProfit,
     addOrder, updateOrder, deleteOrder,
     addExpense, updateExpense, deleteExpense,
+    overrideRevenue, overrideExpenses,
   } = useFinanceData();
 
   return (
@@ -32,7 +34,10 @@ const Index = () => {
           totalExpenses={totalExpenses}
           totalProfit={totalProfit}
           orderCount={orders.length}
+          onOverrideRevenue={overrideRevenue}
+          onOverrideExpenses={overrideExpenses}
         />
+        <CategoryCards orders={orders} />
         <OrdersTable orders={orders} onAdd={addOrder} onUpdate={updateOrder} onDelete={deleteOrder} />
         <ExpensesTable expenses={expenses} onAdd={addExpense} onUpdate={updateExpense} onDelete={deleteExpense} />
       </main>
