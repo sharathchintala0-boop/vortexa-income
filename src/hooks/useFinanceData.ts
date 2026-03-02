@@ -4,6 +4,8 @@ import { initialOrders, initialExpenses } from "@/data/initialData";
 
 const ORDERS_KEY = "hosting_orders_v2";
 const EXPENSES_KEY = "hosting_expenses_v2";
+const REVENUE_OVERRIDE_KEY = "hosting_revenue_override";
+const EXPENSES_OVERRIDE_KEY = "hosting_expenses_override";
 
 function loadFromStorage<T>(key: string, fallback: T): T {
   try {
@@ -21,10 +23,24 @@ function saveToStorage<T>(key: string, data: T) {
 export function useFinanceData() {
   const [orders, setOrders] = useState<Order[]>(() => loadFromStorage(ORDERS_KEY, initialOrders));
   const [expenses, setExpenses] = useState<Expense[]>(() => loadFromStorage(EXPENSES_KEY, initialExpenses));
+  const [revenueOverride, setRevenueOverride] = useState<number | null>(() => loadFromStorage(REVENUE_OVERRIDE_KEY, null));
+  const [expensesOverride, setExpensesOverride] = useState<number | null>(() => loadFromStorage(EXPENSES_OVERRIDE_KEY, null));
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.price, 0);
-  const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const calculatedRevenue = orders.reduce((sum, o) => sum + o.price, 0);
+  const calculatedExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalRevenue = revenueOverride ?? calculatedRevenue;
+  const totalExpenses = expensesOverride ?? calculatedExpenses;
   const totalProfit = totalRevenue - totalExpenses;
+
+  const overrideRevenue = useCallback((val: number) => {
+    setRevenueOverride(val);
+    saveToStorage(REVENUE_OVERRIDE_KEY, val);
+  }, []);
+
+  const overrideExpenses = useCallback((val: number) => {
+    setExpensesOverride(val);
+    saveToStorage(EXPENSES_OVERRIDE_KEY, val);
+  }, []);
 
   const addOrder = useCallback((order: Omit<Order, "id">) => {
     setOrders(prev => {
@@ -79,5 +95,6 @@ export function useFinanceData() {
     totalRevenue, totalExpenses, totalProfit,
     addOrder, updateOrder, deleteOrder,
     addExpense, updateExpense, deleteExpense,
+    overrideRevenue, overrideExpenses,
   };
 }
