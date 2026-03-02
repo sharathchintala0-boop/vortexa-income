@@ -3,6 +3,7 @@ import { StatsCards } from "@/components/StatsCards";
 import { OrdersTable } from "@/components/OrdersTable";
 import { ExpensesTable } from "@/components/ExpensesTable";
 import { CategoryCards } from "@/components/CategoryCards";
+import { UpiBalanceCard } from "@/components/UpiBalanceCard";
 import { Server } from "lucide-react";
 
 const Index = () => {
@@ -37,6 +38,7 @@ const Index = () => {
           onOverrideRevenue={overrideRevenue}
           onOverrideExpenses={overrideExpenses}
         />
+        <UpiBalanceCard />
         <CategoryCards orders={orders} />
         <OrdersTable orders={orders} onAdd={addOrder} onUpdate={updateOrder} onDelete={deleteOrder} />
         <ExpensesTable expenses={expenses} onAdd={addExpense} onUpdate={updateExpense} onDelete={deleteExpense} />
