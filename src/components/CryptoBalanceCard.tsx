@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
-import { Pencil, Check, X, Wallet } from "lucide-react";
+import { Pencil, Check, X, Bitcoin } from "lucide-react";
 
-const UPI_BALANCE_KEY = "hosting_upi_balance";
+const CRYPTO_BALANCE_KEY = "hosting_crypto_balance";
 
-interface UpiBalanceCardProps {
+interface CryptoBalanceCardProps {
   format: (val: number) => string;
   symbol: string;
 }
 
-export function UpiBalanceCard({ format, symbol }: UpiBalanceCardProps) {
+export function CryptoBalanceCard({ format, symbol }: CryptoBalanceCardProps) {
   const [balance, setBalance] = useState<number>(() => {
     try {
-      const stored = localStorage.getItem(UPI_BALANCE_KEY);
+      const stored = localStorage.getItem(CRYPTO_BALANCE_KEY);
       return stored ? JSON.parse(stored) : 0;
     } catch { return 0; }
   });
@@ -19,7 +19,7 @@ export function UpiBalanceCard({ format, symbol }: UpiBalanceCardProps) {
   const [input, setInput] = useState(balance.toString());
 
   useEffect(() => {
-    localStorage.setItem(UPI_BALANCE_KEY, JSON.stringify(balance));
+    localStorage.setItem(CRYPTO_BALANCE_KEY, JSON.stringify(balance));
   }, [balance]);
 
   const save = () => {
@@ -31,19 +31,19 @@ export function UpiBalanceCard({ format, symbol }: UpiBalanceCardProps) {
   return (
     <div className="rounded-lg border border-border bg-card p-5">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-muted-foreground">UPI Balance</span>
+        <span className="text-sm text-muted-foreground">Crypto Balance</span>
         <div className="flex items-center gap-1">
           {!editing && (
             <button onClick={() => { setInput(balance.toString()); setEditing(true); }} className="p-1 rounded hover:bg-secondary transition-colors">
               <Pencil className="h-3 w-3 text-muted-foreground" />
             </button>
           )}
-          <Wallet className="h-4 w-4 text-profit" />
+          <Bitcoin className="h-4 w-4 text-accent-foreground" />
         </div>
       </div>
       {editing ? (
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold font-mono text-profit">{symbol}</span>
+          <span className="text-xl font-bold font-mono text-accent-foreground">$</span>
           <input
             type="number"
             step="0.01"
@@ -57,7 +57,7 @@ export function UpiBalanceCard({ format, symbol }: UpiBalanceCardProps) {
           <button onClick={() => setEditing(false)} className="p-1 rounded hover:bg-expense/20"><X className="h-4 w-4 text-expense" /></button>
         </div>
       ) : (
-        <p className="text-3xl font-bold font-mono text-profit">{format(balance)}</p>
+        <p className="text-3xl font-bold font-mono text-accent-foreground">{format(balance)}</p>
       )}
     </div>
   );
