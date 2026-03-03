@@ -14,11 +14,30 @@ interface OrdersTableProps {
 export function OrdersTable({ orders, onAdd, onUpdate, onDelete }: OrdersTableProps) {
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [showAdd, setShowAdd] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filtered = orders.filter((o) => {
+    const q = search.toLowerCase();
+    return (
+      o.customerId.toLowerCase().includes(q) ||
+      o.serverType.toLowerCase().includes(q) ||
+      o.paymentGateway.toLowerCase().includes(q) ||
+      o.plan.toLowerCase().includes(q) ||
+      o.date.includes(q)
+    );
+  });
 
   return (
     <div className="rounded-lg border border-border bg-card">
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <h2 className="text-lg font-semibold">Orders / Sales</h2>
+      <div className="flex items-center justify-between gap-3 p-4 border-b border-border">
+        <h2 className="text-lg font-semibold shrink-0">Orders / Sales</h2>
+        <input
+          type="text"
+          placeholder="Search orders…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 max-w-xs h-8 rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        />
         <button
           onClick={() => setShowAdd(true)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
@@ -43,7 +62,7 @@ export function OrdersTable({ orders, onAdd, onUpdate, onDelete }: OrdersTablePr
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {filtered.map((order) => (
               <tr key={order.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                 <td className="p-3 font-mono text-xs text-muted-foreground">{order.date}</td>
                 <td className="p-3 font-medium">{order.customerId}</td>
