@@ -1,9 +1,11 @@
 import { useFinanceData } from "@/hooks/useFinanceData";
+import { useCurrency } from "@/hooks/useCurrency";
 import { StatsCards } from "@/components/StatsCards";
 import { OrdersTable } from "@/components/OrdersTable";
 import { ExpensesTable } from "@/components/ExpensesTable";
 import { CategoryCards } from "@/components/CategoryCards";
 import { UpiBalanceCard } from "@/components/UpiBalanceCard";
+import { CryptoBalanceCard } from "@/components/CryptoBalanceCard";
 import { Server } from "lucide-react";
 
 const Index = () => {
@@ -14,6 +16,8 @@ const Index = () => {
     addExpense, updateExpense, deleteExpense,
     overrideRevenue, overrideExpenses,
   } = useFinanceData();
+
+  const { isINR, rate, toggleCurrency, format, symbol } = useCurrency();
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,8 +41,16 @@ const Index = () => {
           orderCount={orders.length}
           onOverrideRevenue={overrideRevenue}
           onOverrideExpenses={overrideExpenses}
+          format={format}
+          symbol={symbol}
+          isINR={isINR}
+          onToggleCurrency={toggleCurrency}
+          rate={rate}
         />
-        <UpiBalanceCard />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <UpiBalanceCard format={format} symbol={symbol} />
+          <CryptoBalanceCard format={format} symbol={symbol} />
+        </div>
         <CategoryCards orders={orders} />
         <OrdersTable orders={orders} onAdd={addOrder} onUpdate={updateOrder} onDelete={deleteOrder} />
         <ExpensesTable expenses={expenses} onAdd={addExpense} onUpdate={updateExpense} onDelete={deleteExpense} />
