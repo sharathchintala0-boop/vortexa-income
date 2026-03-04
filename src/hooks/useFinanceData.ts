@@ -2,6 +2,16 @@ import { useState, useCallback, useEffect } from "react";
 import { Order, Expense } from "@/types/finance";
 import { supabase } from "@/integrations/supabase/client";
 
+async function notifyDiscord(action: string, type: string, data: any) {
+  try {
+    await supabase.functions.invoke("discord-notify", {
+      body: { action, type, data },
+    });
+  } catch (e) {
+    console.error("Discord notify failed:", e);
+  }
+}
+
 const REVENUE_OVERRIDE_KEY = "hosting_revenue_override";
 const EXPENSES_OVERRIDE_KEY = "hosting_expenses_override";
 
@@ -86,7 +96,10 @@ export function useFinanceData() {
       date: order.date,
       notes: order.notes || null,
     }).select().single();
-    if (data) setOrders(prev => [...prev, mapOrder(data)]);
+    if (data) {
+      setOrders(prev => [...prev, mapOrder(data)]);
+      notifyDiscord("added", "order", order);
+    }
   }, []);
 
   const updateOrder = useCallback(async (id: string, order: Partial<Order>) => {
@@ -101,13 +114,20 @@ export function useFinanceData() {
     if (order.date !== undefined) update.date = order.date;
     if (order.notes !== undefined) update.notes = order.notes;
     await supabase.from("orders").update(update).eq("id", id);
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, ...order } : o));
+    setOrders(prev => {
+      const updated = prev.map(o => o.id === id ? { ...o, ...order } : o);
+      const found = updated.find(o => o.id === id);
+      if (found) notifyDiscord("updated", "order", found);
+      return updated;
+    });
   }, []);
 
   const deleteOrder = useCallback(async (id: string) => {
+    const toDelete = orders.find(o => o.id === id);
     await supabase.from("orders").delete().eq("id", id);
     setOrders(prev => prev.filter(o => o.id !== id));
-  }, []);
+    if (toDelete) notifyDiscord("deleted", "order", toDelete);
+  }, [orders]);
 
   const addExpense = useCallback(async (expense: Omit<Expense, "id">) => {
     const { data } = await supabase.from("expenses").insert({
@@ -115,7 +135,10 @@ export function useFinanceData() {
       amount: expense.amount,
       date: expense.date,
     }).select().single();
-    if (data) setExpenses(prev => [...prev, mapExpense(data)]);
+    if (data) {
+      setExpenses(prev => [...prev, mapExpense(data)]);
+      notifyDiscord("added", "expense", expense);
+    }
   }, []);
 
   const updateExpense = useCallback(async (id: string, expense: Partial<Expense>) => {
@@ -124,13 +147,20 @@ export function useFinanceData() {
     if (expense.amount !== undefined) update.amount = expense.amount;
     if (expense.date !== undefined) update.date = expense.date;
     await supabase.from("expenses").update(update).eq("id", id);
-    setExpenses(prev => prev.map(e => e.id === id ? { ...e, ...expense } : e));
+    setExpenses(prev => {
+      const updated = prev.map(e => e.id === id ? { ...e, ...expense } : e);
+      const found = updated.find(e => e.id === id);
+      if (found) notifyDiscord("updated", "expense", found);
+      return updated;
+    });
   }, []);
 
   const deleteExpense = useCallback(async (id: string) => {
+    const toDelete = expenses.find(e => e.id === id);
     await supabase.from("expenses").delete().eq("id", id);
     setExpenses(prev => prev.filter(e => e.id !== id));
-  }, []);
+    if (toDelete) notifyDiscord("deleted", "expense", toDelete);
+  }, [expenses]);
 
   return {
     orders, expenses,
