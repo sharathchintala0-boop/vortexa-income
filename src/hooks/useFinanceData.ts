@@ -98,6 +98,9 @@ export function useFinanceData() {
     }).select().single();
     if (data) {
       setOrders(prev => [...prev, mapOrder(data)]);
+      // Clear revenue override so calculated total is used
+      setRevenueOverride(null);
+      localStorage.removeItem(REVENUE_OVERRIDE_KEY);
       notifyDiscord("added", "order", order);
     }
   }, []);
@@ -126,6 +129,8 @@ export function useFinanceData() {
     const toDelete = orders.find(o => o.id === id);
     await supabase.from("orders").delete().eq("id", id);
     setOrders(prev => prev.filter(o => o.id !== id));
+    setRevenueOverride(null);
+    localStorage.removeItem(REVENUE_OVERRIDE_KEY);
     if (toDelete) notifyDiscord("deleted", "order", toDelete);
   }, [orders]);
 
