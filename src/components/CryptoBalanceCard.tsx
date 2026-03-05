@@ -29,28 +29,28 @@ export function CryptoBalanceCard({ format, symbol }: CryptoBalanceCardProps) {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="glow-card rounded-lg border border-border/50 bg-card/80 backdrop-blur-sm p-5 transition-all duration-300 hover:border-border hover:shadow-glow-accent">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-muted-foreground">Crypto Balance</span>
+        <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Crypto Balance</span>
         <div className="flex items-center gap-1">
           {!editing && (
             <button onClick={() => { setInput(balance.toString()); setEditing(true); }} className="p-1 rounded hover:bg-secondary transition-colors">
               <Pencil className="h-3 w-3 text-muted-foreground" />
             </button>
           )}
-          <Bitcoin className="h-4 w-4 text-accent-foreground" />
+          <div className="p-1.5 rounded-md bg-secondary/50">
+            <Bitcoin className="h-4 w-4 text-accent-foreground" />
+          </div>
         </div>
       </div>
       {editing ? (
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold font-mono text-accent-foreground">$</span>
           <input
-            type="number"
-            step="0.01"
-            value={input}
+            type="number" step="0.01" value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && save()}
-            className="w-full rounded-md border border-border bg-secondary px-2 py-1 text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-ring"
+            className="w-full rounded-md border border-border/50 bg-secondary/50 px-2 py-1 text-lg font-bold font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             autoFocus
           />
           <button onClick={save} className="p-1 rounded hover:bg-revenue/20"><Check className="h-4 w-4 text-revenue" /></button>
