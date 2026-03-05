@@ -32,64 +32,64 @@ export function ExpensesTable({ expenses, onAdd, onUpdate, onDelete }: ExpensesT
     setShowForm(true);
   };
 
-  const inputClass = "w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring";
+  const inputClass = "w-full rounded-md border border-border/50 bg-secondary/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-colors";
 
   return (
-    <div className="rounded-lg border border-border bg-card">
-      <div className="flex items-center justify-between p-4 border-b border-border">
+    <div className="glow-card rounded-lg border border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
+      <div className="flex items-center justify-between p-4 border-b border-border/50">
         <h2 className="text-lg font-semibold">Expenses</h2>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-expense text-expense-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-expense to-expense/80 text-foreground text-sm font-medium hover:shadow-glow-expense transition-all duration-200"
         >
           <Plus className="h-4 w-4" /> Add Expense
         </button>
       </div>
 
       {showForm && (
-        <div className="p-4 border-b border-border bg-secondary/30">
+        <div className="p-4 border-b border-border/50 bg-secondary/10">
           <form onSubmit={handleSubmit} className="flex items-end gap-3">
             <div className="flex-1">
-              <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+              <label className="text-xs text-muted-foreground mb-1 block font-mono uppercase tracking-wider">Description</label>
               <input className={inputClass} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} required />
             </div>
             <div className="w-28">
-              <label className="text-xs text-muted-foreground mb-1 block">Amount ($)</label>
+              <label className="text-xs text-muted-foreground mb-1 block font-mono uppercase tracking-wider">Amount ($)</label>
               <input type="number" step="0.01" className={inputClass} value={form.amount} onChange={e => setForm(f => ({ ...f, amount: Number(e.target.value) }))} required />
             </div>
             <div className="w-36">
-              <label className="text-xs text-muted-foreground mb-1 block">Date</label>
+              <label className="text-xs text-muted-foreground mb-1 block font-mono uppercase tracking-wider">Date</label>
               <input type="date" className={inputClass} value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
             </div>
-            <button type="submit" className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
+            <button type="submit" className="px-4 py-2 rounded-md bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium hover:shadow-glow-sm transition-all">
               {editing ? "Update" : "Add"}
             </button>
-            <button type="button" onClick={resetForm} className="p-2 hover:bg-secondary rounded"><X className="h-4 w-4" /></button>
+            <button type="button" onClick={resetForm} className="p-2 hover:bg-secondary rounded transition-colors"><X className="h-4 w-4" /></button>
           </form>
         </div>
       )}
 
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border text-muted-foreground">
-            <th className="text-left p-3 font-medium">Date</th>
-            <th className="text-left p-3 font-medium">Description</th>
-            <th className="text-right p-3 font-medium">Amount</th>
-            <th className="text-right p-3 font-medium">Actions</th>
+          <tr className="border-b border-border/50 text-muted-foreground">
+            <th className="text-left p-3 font-medium text-xs uppercase tracking-wider">Date</th>
+            <th className="text-left p-3 font-medium text-xs uppercase tracking-wider">Description</th>
+            <th className="text-right p-3 font-medium text-xs uppercase tracking-wider">Amount</th>
+            <th className="text-right p-3 font-medium text-xs uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody>
           {expenses.map((exp) => (
-            <tr key={exp.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
+            <tr key={exp.id} className="border-b border-border/30 hover:bg-secondary/20 transition-colors group">
               <td className="p-3 font-mono text-xs text-muted-foreground">{exp.date}</td>
               <td className="p-3">{exp.description}</td>
               <td className="p-3 text-right font-mono text-expense font-semibold">${exp.amount.toFixed(2)}</td>
               <td className="p-3 text-right">
-                <div className="flex items-center justify-end gap-1">
+                <div className="flex items-center justify-end gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => startEdit(exp)} className="p-1.5 rounded hover:bg-secondary transition-colors">
                     <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
-                  <button onClick={() => onDelete(exp.id)} className="p-1.5 rounded hover:bg-destructive/20 transition-colors">
+                  <button onClick={() => onDelete(exp.id)} className="p-1.5 rounded hover:bg-expense/10 transition-colors">
                     <Trash2 className="h-3.5 w-3.5 text-expense" />
                   </button>
                 </div>

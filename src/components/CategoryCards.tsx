@@ -19,34 +19,35 @@ function categorize(serverType: string): string {
 }
 
 const categoryIcons: Record<string, React.ElementType> = {
-  "Python": Code,
-  "Node.js": Server,
-  "Python & Node.js": Code,
-  "VPS": HardDrive,
-  "Website": Globe,
-  "Other": Package,
-  "Slot": Package,
-  "Mail Server": Server,
+  "Python": Code, "Node.js": Server, "Python & Node.js": Code,
+  "VPS": HardDrive, "Website": Globe, "Other": Package,
+  "Slot": Package, "Mail Server": Server,
 };
 
-const categoryColors: Record<string, string> = {
-  "Python": "bg-chart-1/15 text-chart-1 border-chart-1/30",
-  "Node.js": "bg-revenue/15 text-revenue border-revenue/30",
-  "Python & Node.js": "bg-chart-2/15 text-chart-2 border-chart-2/30",
-  "VPS": "bg-profit/15 text-profit border-profit/30",
-  "Website": "bg-chart-4/15 text-chart-4 border-chart-4/30",
-  "Other": "bg-secondary text-muted-foreground border-border",
-  "Slot": "bg-chart-3/15 text-chart-3 border-chart-3/30",
-  "Mail Server": "bg-chart-5/15 text-chart-5 border-chart-5/30",
+const categoryGlows: Record<string, string> = {
+  "Python": "hover:shadow-glow-sm border-chart-1/20",
+  "Node.js": "hover:shadow-glow-revenue border-revenue/20",
+  "Python & Node.js": "hover:shadow-glow-accent border-accent/20",
+  "VPS": "hover:shadow-glow-profit border-profit/20",
+  "Website": "hover:shadow-glow-sm border-primary/20",
+  "Other": "border-border/50",
+  "Slot": "hover:shadow-glow-accent border-chart-5/20",
+  "Mail Server": "border-border/50",
+};
+
+const categoryTextColors: Record<string, string> = {
+  "Python": "text-chart-1", "Node.js": "text-revenue", "Python & Node.js": "text-accent-foreground",
+  "VPS": "text-profit", "Website": "text-primary", "Other": "text-muted-foreground",
+  "Slot": "text-chart-5", "Mail Server": "text-muted-foreground",
 };
 
 function CategoryCard({ cat, data, orders }: { cat: string; data: { customers: Set<string>; revenue: number; count: number }; orders: Order[] }) {
   const [expanded, setExpanded] = useState(false);
   const Icon = categoryIcons[cat] || Package;
-  const colors = categoryColors[cat] || categoryColors["Other"];
+  const glow = categoryGlows[cat] || categoryGlows["Other"];
+  const textColor = categoryTextColors[cat] || categoryTextColors["Other"];
   const customerList = Array.from(data.customers);
 
-  // Get orders for each customer in this category
   const customerOrders: Record<string, Order[]> = {};
   orders.forEach((order) => {
     if (categorize(order.serverType) === cat) {
@@ -56,38 +57,45 @@ function CategoryCard({ cat, data, orders }: { cat: string; data: { customers: S
   });
 
   return (
-    <div className={`rounded-lg border p-4 ${colors} cursor-pointer transition-all`} onClick={() => setExpanded(!expanded)}>
+    <div
+      className={`rounded-lg border bg-card/60 backdrop-blur-sm p-4 cursor-pointer transition-all duration-300 ${glow}`}
+      onClick={() => setExpanded(!expanded)}
+    >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4" />
-          <span className="text-sm font-semibold">{cat}</span>
+          <div className={`p-1.5 rounded-md bg-secondary/50`}>
+            <Icon className={`h-3.5 w-3.5 ${textColor}`} />
+          </div>
+          <span className={`text-sm font-semibold ${textColor}`}>{cat}</span>
         </div>
-        {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        {expanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
       </div>
-      <p className="text-xs opacity-80 mb-2">{data.count} orders · {customerList.length} clients · ${data.revenue.toFixed(0)} revenue</p>
+      <p className="text-xs text-muted-foreground mb-2 font-mono">
+        {data.count} orders · {customerList.length} clients · <span className="text-revenue">${data.revenue.toFixed(0)}</span>
+      </p>
 
       {!expanded && (
-        <div className="text-xs opacity-70">
+        <div className="text-xs">
           {customerList.slice(0, 3).map((c) => (
-            <span key={c} className="inline-block mr-1 mb-1 px-1.5 py-0.5 rounded bg-background/50 text-foreground text-[10px]">
+            <span key={c} className="inline-block mr-1 mb-1 px-1.5 py-0.5 rounded bg-secondary/50 text-secondary-foreground text-[10px] font-mono">
               {c}
             </span>
           ))}
           {customerList.length > 3 && (
-            <span className="text-[10px] opacity-60">+{customerList.length - 3} more</span>
+            <span className="text-[10px] text-muted-foreground">+{customerList.length - 3} more</span>
           )}
         </div>
       )}
 
       {expanded && (
-        <div className="mt-2 space-y-2 text-foreground" onClick={(e) => e.stopPropagation()}>
+        <div className="mt-2 space-y-2" onClick={(e) => e.stopPropagation()}>
           {customerList.map((customer) => (
-            <div key={customer} className="rounded-md bg-background/60 p-2">
-              <p className="text-xs font-semibold mb-1">{customer}</p>
+            <div key={customer} className="rounded-md bg-secondary/30 border border-border/30 p-2">
+              <p className="text-xs font-semibold mb-1 text-foreground">{customer}</p>
               {customerOrders[customer]?.map((order) => (
-                <div key={order.id} className="flex items-center justify-between text-[10px] opacity-80">
+                <div key={order.id} className="flex items-center justify-between text-[10px] text-muted-foreground font-mono">
                   <span>{order.date} · {order.plan}</span>
-                  <span className="font-mono font-semibold">${order.price.toFixed(2)}</span>
+                  <span className="font-semibold text-revenue">${order.price.toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -112,8 +120,8 @@ export function CategoryCards({ orders }: CategoryCardsProps) {
   const sorted = Object.entries(groups).sort((a, b) => b[1].count - a[1].count);
 
   return (
-    <div className="rounded-lg border border-border bg-card">
-      <div className="p-4 border-b border-border">
+    <div className="glow-card rounded-lg border border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
+      <div className="p-4 border-b border-border/50">
         <h2 className="text-lg font-semibold">Categories</h2>
       </div>
       <div className="p-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
