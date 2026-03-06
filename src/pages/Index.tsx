@@ -3,7 +3,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import { StatsCards } from "@/components/StatsCards";
 import { OrdersTable } from "@/components/OrdersTable";
 import { ExpensesTable } from "@/components/ExpensesTable";
-import { CategoryCards } from "@/components/CategoryCards";
+
 import { UpiBalanceCard } from "@/components/UpiBalanceCard";
 import { CryptoBalanceCard } from "@/components/CryptoBalanceCard";
 import { Server, Zap } from "lucide-react";
@@ -91,9 +91,6 @@ const Index = () => {
           <CryptoBalanceCard format={format} symbol={symbol} />
         </motion.div>
 
-        <motion.div custom={2} initial="hidden" animate="visible" variants={fadeUp}>
-          <CategoryCards orders={orders} />
-        </motion.div>
 
         <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}>
           <OrdersTable orders={orders} onAdd={addOrder} onUpdate={updateOrder} onDelete={deleteOrder} />
