@@ -91,9 +91,6 @@ const Index = () => {
           <CryptoBalanceCard format={format} symbol={symbol} />
         </motion.div>
 
-        <motion.div custom={2} initial="hidden" animate="visible" variants={fadeUp}>
-          <CategoryCards orders={orders} />
-        </motion.div>
 
         <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}>
           <OrdersTable orders={orders} onAdd={addOrder} onUpdate={updateOrder} onDelete={deleteOrder} />
