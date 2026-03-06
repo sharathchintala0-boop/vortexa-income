@@ -3,7 +3,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import { StatsCards } from "@/components/StatsCards";
 import { OrdersTable } from "@/components/OrdersTable";
 import { ExpensesTable } from "@/components/ExpensesTable";
-import { CategoryCards } from "@/components/CategoryCards";
+
 import { UpiBalanceCard } from "@/components/UpiBalanceCard";
 import { CryptoBalanceCard } from "@/components/CryptoBalanceCard";
 import { Server, Zap } from "lucide-react";
