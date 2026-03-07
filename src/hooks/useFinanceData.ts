@@ -54,7 +54,7 @@ export function useFinanceData() {
   const [revenueOverride, setRevenueOverride] = useState<number | null>(() => loadOverride(REVENUE_OVERRIDE_KEY));
   const [expensesOverride, setExpensesOverride] = useState<number | null>(() => loadOverride(EXPENSES_OVERRIDE_KEY));
 
-  // Fetch from DB
+  // Fetch from DB + realtime sync
   useEffect(() => {
     const fetchOrders = async () => {
       const { data } = await supabase.from("orders").select("*").order("date", { ascending: true });
@@ -66,6 +66,26 @@ export function useFinanceData() {
     };
     fetchOrders();
     fetchExpenses();
+
+    // Realtime subscriptions for live sync
+    const ordersChannel = supabase
+      .channel('orders-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        fetchOrders();
+      })
+      .subscribe();
+
+    const expensesChannel = supabase
+      .channel('expenses-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'expenses' }, () => {
+        fetchExpenses();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(expensesChannel);
+    };
   }, []);
 
   const calculatedRevenue = orders.reduce((sum, o) => sum + o.price, 0);
