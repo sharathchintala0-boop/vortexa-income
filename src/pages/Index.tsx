@@ -91,7 +91,9 @@ const Index = () => {
           <UpiBalanceCard format={format} symbol={symbol} />
           <CryptoBalanceCard format={format} symbol={symbol} />
         </motion.div>
-
+        <motion.div custom={2} initial="hidden" animate="visible" variants={fadeUp}>
+          <RevenueChart orders={orders} format={format} symbol={symbol} />
+        </motion.div>
 
         <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}>
           <OrdersTable orders={orders} onAdd={addOrder} onUpdate={updateOrder} onDelete={deleteOrder} />
