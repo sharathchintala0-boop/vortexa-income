@@ -2,6 +2,7 @@ import { useFinanceData } from "@/hooks/useFinanceData";
 import { useCurrency } from "@/hooks/useCurrency";
 import { StatsCards } from "@/components/StatsCards";
 import { OrdersTable } from "@/components/OrdersTable";
+import { RevenueChart } from "@/components/RevenueChart";
 import { ExpensesTable } from "@/components/ExpensesTable";
 
 import { UpiBalanceCard } from "@/components/UpiBalanceCard";
