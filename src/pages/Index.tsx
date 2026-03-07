@@ -2,6 +2,7 @@ import { useFinanceData } from "@/hooks/useFinanceData";
 import { useCurrency } from "@/hooks/useCurrency";
 import { StatsCards } from "@/components/StatsCards";
 import { OrdersTable } from "@/components/OrdersTable";
+import { RevenueChart } from "@/components/RevenueChart";
 import { ExpensesTable } from "@/components/ExpensesTable";
 
 import { UpiBalanceCard } from "@/components/UpiBalanceCard";
@@ -90,7 +91,9 @@ const Index = () => {
           <UpiBalanceCard format={format} symbol={symbol} />
           <CryptoBalanceCard format={format} symbol={symbol} />
         </motion.div>
-
+        <motion.div custom={2} initial="hidden" animate="visible" variants={fadeUp}>
+          <RevenueChart orders={orders} format={format} symbol={symbol} />
+        </motion.div>
 
         <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}>
           <OrdersTable orders={orders} onAdd={addOrder} onUpdate={updateOrder} onDelete={deleteOrder} />
